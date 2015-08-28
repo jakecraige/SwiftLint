@@ -9,17 +9,23 @@
 import SourceKittenFramework
 
 public struct LineLengthRule: ParameterizedRule {
-    public init() {}
+    public init() {
+        self.init(parameters: [
+            RuleParameter(severity: .VeryLow, value: 100),
+            RuleParameter(severity: .Low, value: 120),
+            RuleParameter(severity: .Medium, value: 150),
+            RuleParameter(severity: .High, value: 200),
+            RuleParameter(severity: .VeryHigh, value: 250)
+        ])
+    }
+
+    public init(parameters: [RuleParameter<Int>]) {
+        self.parameters = parameters
+    }
 
     public let identifier = "line_length"
 
-    public let parameters = [
-        RuleParameter(severity: .VeryLow, value: 100),
-        RuleParameter(severity: .Low, value: 120),
-        RuleParameter(severity: .Medium, value: 150),
-        RuleParameter(severity: .High, value: 200),
-        RuleParameter(severity: .VeryHigh, value: 250)
-    ]
+    public let parameters: [RuleParameter<Int>]
 
     public func validateFile(file: File) -> [StyleViolation] {
         return file.contents.lines().flatMap { line in
@@ -28,8 +34,8 @@ public struct LineLengthRule: ParameterizedRule {
                     return StyleViolation(type: .Length,
                         location: Location(file: file.path, line: line.index),
                         severity: parameter.severity,
-                        reason: "Line should be 100 characters or less: currently " +
-                        "\(line.content.characters.count) characters")
+                        reason: "Line should be \(parameter.value) characters or less: " +
+                        "currently \(line.content.characters.count) characters")
                 }
             }
             return nil

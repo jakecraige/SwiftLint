@@ -10,17 +10,23 @@ import SourceKittenFramework
 import SwiftXPC
 
 public struct FunctionBodyLengthRule: ASTRule, ParameterizedRule {
-    public init() {}
+    public init() {
+        self.init(parameters: [
+            RuleParameter(severity: .VeryLow, value: 40),
+            RuleParameter(severity: .Low, value: 50),
+            RuleParameter(severity: .Medium, value: 75),
+            RuleParameter(severity: .High, value: 100),
+            RuleParameter(severity: .VeryHigh, value: 200)
+        ])
+    }
+
+    public init(parameters: [RuleParameter<Int>]) {
+        self.parameters = parameters
+    }
 
     public let identifier = "function_body_length"
 
-    public let parameters = [
-        RuleParameter(severity: .VeryLow, value: 40),
-        RuleParameter(severity: .Low, value: 50),
-        RuleParameter(severity: .Medium, value: 75),
-        RuleParameter(severity: .High, value: 100),
-        RuleParameter(severity: .VeryHigh, value: 200)
-    ]
+    public let parameters: [RuleParameter<Int>]
 
     public func validateFile(file: File) -> [StyleViolation] {
         return validateFile(file, dictionary: file.structure.dictionary)
@@ -76,8 +82,8 @@ public struct FunctionBodyLengthRule: ASTRule, ParameterizedRule {
                     return [StyleViolation(type: .Length,
                         location: location,
                         severity: parameter.severity,
-                        reason: "Function body should be span 40 lines or less: currently spans " +
-                        "\(endLine - startLine) lines")]
+                        reason: "Function body should be span \(parameter.value) lines or less: " +
+                        "currently spans \(endLine - startLine) lines")]
                 }
             }
         }

@@ -9,17 +9,23 @@
 import SourceKittenFramework
 
 public struct FileLengthRule: ParameterizedRule {
-    public init() {}
+    public init() {
+        self.init(parameters: [
+            RuleParameter(severity: .VeryLow, value: 400),
+            RuleParameter(severity: .Low, value: 500),
+            RuleParameter(severity: .Medium, value: 750),
+            RuleParameter(severity: .High, value: 1000),
+            RuleParameter(severity: .VeryHigh, value: 2000)
+        ])
+    }
+
+    public init(parameters: [RuleParameter<Int>]) {
+        self.parameters = parameters
+    }
 
     public let identifier = "file_length"
 
-    public let parameters = [
-        RuleParameter(severity: .VeryLow, value: 400),
-        RuleParameter(severity: .Low, value: 500),
-        RuleParameter(severity: .Medium, value: 750),
-        RuleParameter(severity: .High, value: 1000),
-        RuleParameter(severity: .VeryHigh, value: 2000)
-    ]
+    public let parameters: [RuleParameter<Int>]
 
     public func validateFile(file: File) -> [StyleViolation] {
         let lines = file.contents.lines()
@@ -28,8 +34,8 @@ public struct FileLengthRule: ParameterizedRule {
                 return [StyleViolation(type: .Length,
                     location: Location(file: file.path, line: lines.count),
                     severity: parameter.severity,
-                    reason: "File should contain 400 lines or less: currently contains " +
-                    "\(lines.count)")]
+                    reason: "File should contain \(parameter.value) lines or less: currently " +
+                    "contains \(lines.count)")]
             }
         }
         return []
