@@ -34,8 +34,8 @@ public struct FileLengthRule: ParameterizedRule {
                 return [StyleViolation(type: .Length,
                     location: Location(file: file.path, line: lines.count),
                     severity: parameter.severity,
-                    reason: "File should contain \(parameter.value) lines or less: currently " +
-                    "contains \(lines.count)")]
+                    reason: "File should contain \(parameters.first!.value) lines or less: " +
+                    "currently contains \(lines.count)")]
             }
         }
         return []

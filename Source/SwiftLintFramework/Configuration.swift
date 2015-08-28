@@ -26,7 +26,7 @@ public struct Configuration {
     public init?(disabledRules: [String] = [],
         included: [String] = [],
         excluded: [String] = [],
-        rules: [Rule] = []) {
+        rules: [Rule] = allRules) {
         self.disabledRules = disabledRules
         self.included = included
         self.excluded = excluded
